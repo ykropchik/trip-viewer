@@ -1,4 +1,4 @@
-import type { Place, Trip } from './schema';
+import { stopPlaces, type Place, type Trip } from './schema';
 
 const d = (iso: string) => new Date(iso + 'T00:00:00');
 const wdShort = new Intl.DateTimeFormat('ru-RU', { weekday: 'short' });
@@ -45,7 +45,7 @@ export function budgetTotals(t: Trip) {
 }
 
 /** Days that visit a place, in trip order. */
-export const daysWithPlace = (t: Trip, placeId: string) => t.days.filter(day => day.stops.some(s => s.place === placeId));
+export const daysWithPlace = (t: Trip, placeId: string) => t.days.filter(day => stopPlaces(day).includes(placeId));
 
 export function downloadJson(name: string, data: unknown) {
   const blob = new Blob([JSON.stringify(data, null, 2) + '\n'], { type: 'application/json' });

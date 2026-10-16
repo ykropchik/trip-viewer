@@ -9,7 +9,7 @@
         },
         "version": {
           "type": "number",
-          "const": 1
+          "const": 2
         },
         "id": {
           "type": "string",
@@ -199,52 +199,38 @@
                 ],
                 "description": "id из stays — где ночуем; null в день вылета"
               },
-              "stops": {
+              "timeline": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "place": {
-                      "type": "string",
-                      "description": "Ключ из places; без него пункт показывается без точки на карте"
-                    },
                     "time": {
                       "type": "string",
                       "description": "Время или часть дня: «09:25», «утро», «вечер»"
                     },
                     "text": {
                       "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "required": [
-                    "text"
-                  ],
-                  "additionalProperties": false
-                },
-                "default": []
-              },
-              "moves": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "how": {
+                      "minLength": 1,
+                      "description": "Остановка: что делаем"
+                    },
+                    "place": {
+                      "type": "string",
+                      "description": "Остановка: ключ из places; без него пункт показывается без точки на карте"
+                    },
+                    "move": {
                       "type": "string",
                       "minLength": 1,
-                      "description": "Как едем: «Синкансэн, Токио → Нагоя»"
+                      "description": "Переезд: как едем, например «Синкансэн, Токио → Нагоя»"
                     },
                     "duration": {
                       "type": "string",
-                      "description": "Сколько в пути: «~1 ч 40 мин»"
+                      "description": "Переезд: сколько в пути, например «~1 ч 40 мин»"
                     }
                   },
-                  "required": [
-                    "how"
-                  ],
                   "additionalProperties": false
                 },
-                "default": []
+                "default": [],
+                "description": "Остановки и переезды в порядке дня"
               },
               "tip": {
                 "type": "string"
@@ -407,5 +393,5 @@
   },
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Trip",
-  "description": "Формат поездки для trip-viewer, версия 1. Связи между разделами (place, stay, category) проверяет сам сайт при импорте."
+  "description": "Формат поездки для trip-viewer, версия 2. Связи между разделами (place, stay, category) проверяет сам сайт при импорте."
 }

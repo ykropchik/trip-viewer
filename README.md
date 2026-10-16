@@ -13,18 +13,19 @@
 
 | Поле | Что это |
 | --- | --- |
-| `version` | Всегда `1` |
+| `version` | `2`. Файлы версии 1 конвертируются при импорте |
 | `id` | Латиница, цифры, `-`, `_`. Поездка с тем же `id` заменяется при импорте |
 | `start`, `end` | Даты `YYYY-MM-DD` |
 | `categories` | `{ key: { label, color } }` — легенда и цвета маркеров |
 | `places` | `{ key: { name, category, lat, lon, query?, note?, url? } }` — все точки на карте |
 | `stays` | Ночёвки: город, район, `checkIn`/`checkOut`, центр и `radiusKm` района, `why`, `alt`, `hotel` |
-| `days` | По дню на дату: `title`, `stay` (id ночёвки), `stops` (`place?`, `time?`, `text`), `moves`, `tip` |
+| `days` | По дню на дату: `title`, `stay` (id ночёвки), `timeline`, `tip` |
+| `days[].timeline` | Остановки и переезды по порядку: остановка — `{ text, place?, time? }`, переезд — `{ move, duration?, time? }` |
 | `lines` | Линии поездов: `kind: "highspeed" \| "rail"`, `path: [[lon, lat], …]` |
 | `bookings` | Что забронировать: `what`, `when`, `deadline?`, `url?`, `done` |
 | `budget` | `currency`, `note`, `items: [{ what, how?, min, max }]` |
 
-Сайт проверяет связи при импорте: каждая `stop.place` должна быть в `places`, `day.stay` — в `stays`, `place.category` — в `categories`.
+Сайт проверяет связи при импорте: каждая `timeline[].place` должна быть в `places`, `day.stay` — в `stays`, `place.category` — в `categories`.
 
 ```bash
 npm run validate -- path/to/trip.json   # проверить файл из консоли

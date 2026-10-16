@@ -55,9 +55,22 @@ export function DayPlan({ trip, index, highlight, onHighlight, onSelectDay }: Da
           <span className="stay-pill">Ночёвка: <b>{stay.city}, {stay.hotel || stay.area}</b></span>
         </div>
       )}
-      <ol className="stops" ref={list}>
-        {day.stops.map((s, i) => {
-          const p = s.place ? trip.places[s.place] : null;
+      <ol className="timeline" ref={list}>
+        {day.timeline.map((it, i) => {
+          if (it.move) {
+            return (
+              <li key={i} className="tl-move">
+                <span className="mv-ico" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" width="12" height="12"><path d="M8 2v11M3.5 8.5 8 13l4.5-4.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </span>
+                <div className="body">
+                  <span className="how">{it.time && <span className="t">{it.time} · </span>}{it.move}</span>
+                  {it.duration && <span className="dur">{it.duration}</span>}
+                </div>
+              </li>
+            );
+          }
+          const p = it.place ? trip.places[it.place] : null;
           const idx = p ? n++ : -1;
           const color = p ? trip.categories[p.category]?.color : undefined;
           return (
@@ -70,23 +83,15 @@ export function DayPlan({ trip, index, highlight, onHighlight, onSelectDay }: Da
             >
               {p ? <span className="num" style={{ background: color }}>{idx + 1}</span> : <span className="num none" />}
               <div className="body">
-                {s.time && <div className="t">{s.time}</div>}
+                {it.time && <div className="t">{it.time}</div>}
                 {p && <div className="n">{p.name}</div>}
-                <div className={p ? 'x' : 'n'}>{s.text}</div>
+                <div className={p ? 'x' : 'n'}>{it.text}</div>
                 {p && <a className="gm" href={gmapsUrl(p)} target="_blank" rel="noopener">Открыть в Google Maps ↗</a>}
               </div>
             </li>
           );
         })}
       </ol>
-      {day.moves.length > 0 && (
-        <div className="moves">
-          <div className="eyebrow">Переезды</div>
-          {day.moves.map((m, i) => (
-            <div key={i} className="move"><span>{m.how}</span>{m.duration && <span className="dur">{m.duration}</span>}</div>
-          ))}
-        </div>
-      )}
       {day.tip && <div className="tip">{day.tip}</div>}
       <div className="pager">
         <button className="btn" type="button" disabled={!prev} onClick={() => prev && onSelectDay(prev.date)}>← {prev ? chipLabel(prev.date) : ''}</button>

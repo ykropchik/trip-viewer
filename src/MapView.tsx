@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import type { GeoJSONSource, Map as MLMap, Marker } from 'maplibre-gl';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
-import type { Day, Place, Trip } from './schema';
+import { stopPlaces, type Day, type Place, type Trip } from './schema';
 import { daysWithPlace, gmapsUrl, chipLabel, nightsBetween, nightsWord } from './util';
 
 // The bundled build can't find maplibre's worker next to itself, so point it at Vite's worker chunk.
@@ -128,8 +128,9 @@ export function MapView({ trip, day, highlight, onHighlight, onSelectDay }: Prop
     );
 
     // overview path: first stop → stays in order → last stop
-    const firstStop = trip.days[0]?.stops.find(s => s.place)?.place;
-    const lastStop = [...(trip.days[trip.days.length - 1]?.stops ?? [])].reverse().find(s => s.place)?.place;
+    const firstStop = trip.days[0] ? stopPlaces(trip.days[0])[0] : undefined;
+    const lastDay = trip.days[trip.days.length - 1];
+    const lastStop = lastDay ? stopPlaces(lastDay).at(-1) : undefined;
     const tripPath: GeoJSON.Position[] = [];
     if (firstStop) tripPath.push([P[firstStop].lon, P[firstStop].lat]);
     trip.stays.forEach(s => tripPath.push([s.lon, s.lat]));
@@ -138,7 +139,7 @@ export function MapView({ trip, day, highlight, onHighlight, onSelectDay }: Prop
       fc(!day && tripPath.length > 1 ? [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: tripPath } }] : []),
     );
 
-    const stopIds = day ? day.stops.filter(s => s.place).map(s => s.place!) : [];
+    const stopIds = day ? stopPlaces(day) : [];
     (map.getSource('route') as GeoJSONSource).setData(
       fc(stopIds.length > 1 ? [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: stopIds.map(id => [P[id].lon, P[id].lat]) } }] : []),
     );

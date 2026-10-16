@@ -1,4 +1,4 @@
-import type { Trip } from './schema';
+import { stopPlaces, type Trip } from './schema';
 import { store } from './storage';
 import { go } from './route';
 import { budgetTotals, chipLabel, dateRange, money, nightsBetween, nightsWord } from './util';
@@ -8,7 +8,7 @@ function staysLine(t: Trip) {
 }
 
 function categoryCounts(t: Trip) {
-  const visited = new Set(t.days.flatMap(d => d.stops.map(s => s.place).filter(Boolean) as string[]));
+  const visited = new Set(t.days.flatMap(stopPlaces));
   const out: Record<string, number> = {};
   visited.forEach(id => {
     const c = t.places[id]?.category;
@@ -99,13 +99,13 @@ function CompareTables({ A, B }: { A: Trip; B: Trip }) {
             <tbody>
               {dates.map(date => {
                 const x = dayOf(A, date), y = dayOf(B, date);
-                const sig = (t: Trip, d?: typeof x) => (d ? d.title + '|' + cityOf(t, d.stay) + '|' + d.stops.map(s => s.place ?? s.text).join(',') : '');
+                const sig = (t: Trip, d?: typeof x) => (d ? d.title + '|' + cityOf(t, d.stay) + '|' + d.timeline.map(s => s.place ?? s.text ?? s.move).join(',') : '');
                 const diff = sig(A, x) !== sig(B, y);
                 const cell = (t: Trip, d?: typeof x) =>
                   d ? (
                     <a href={`#/t/${t.id}/${d.date}`}>
                       <b>{d.title}</b>
-                      <small>{cityOf(t, d.stay) || 'без ночёвки'} · {d.stops.filter(s => s.place).length} точ.</small>
+                      <small>{cityOf(t, d.stay) || 'без ночёвки'} · {stopPlaces(d).length} точ.</small>
                     </a>
                   ) : <span className="muted">—</span>;
                 return (

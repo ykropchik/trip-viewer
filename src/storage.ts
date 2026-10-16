@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import type { Trip } from './schema';
+import { validateTrip, type Trip } from './schema';
 
 /** All trips live in this browser's localStorage under one key. */
 const KEY = 'trip-viewer:v1';
@@ -14,7 +14,17 @@ const listeners = new Set<() => void>();
 function read(): Store {
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) || 'null');
-    if (raw && typeof raw === 'object' && raw.trips) return raw as Store;
+    if (raw && typeof raw === 'object' && raw.trips) {
+      // trips saved by an older version of the site are upgraded to the current format on read
+      const store = raw as Store;
+      for (const [id, e] of Object.entries(store.trips)) {
+        if ((e.trip as { version?: number }).version === 2) continue;
+        const r = validateTrip(e.trip);
+        if (r.ok) store.trips[id] = { ...e, trip: r.trip };
+        else delete store.trips[id];
+      }
+      return store;
+    }
   } catch {
     /* empty or blocked storage */
   }
