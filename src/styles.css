@@ -91,12 +91,18 @@ select {
 .lg-zone { width: 14px; height: 14px; border-radius: 50%; border: 1.5px dashed #1c5cbf; background: rgba(28, 92, 191, .1); }
 
 /* Map markers (DOM) */
+/* maplibre positions marker roots with transform; scale/transform/translate only on children */
 .mk-dot {
-  width: 12px; height: 12px; border-radius: 50%; padding: 0; cursor: pointer;
-  background: var(--c); border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, .15);
+  width: 18px; height: 18px; padding: 0; border: 0; background: none; cursor: pointer;
+  display: grid; place-items: center;
 }
-.mk-dot.faint { width: 9px; height: 9px; opacity: .45; }
-.mk-dot:hover { scale: 1.35; opacity: 1; }
+.mk-dot .d {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--c); border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, .15);
+  transition: transform .12s ease;
+}
+.mk-dot.faint .d { width: 9px; height: 9px; opacity: .45; }
+.mk-dot:hover .d { transform: scale(1.35); opacity: 1; }
 .mk-num {
   /* maplibre positions the marker root absolutely via transform: never set position or transform on it */
   display: flex; align-items: center; padding: 0; border: 0; background: none; cursor: pointer;
@@ -113,7 +119,7 @@ select {
 .mk-num.hl .n { transform: scale(1.2); box-shadow: 0 0 0 3px var(--c); }
 .mk-num.hl { z-index: 2; }
 .stay-tag {
-  display: grid; text-align: center; pointer-events: none; translate: 0 -8px;
+  display: grid; text-align: center; pointer-events: none;
   background: #fff; color: #16202a; border-radius: 8px; padding: 3px 9px; box-shadow: 0 1px 4px rgba(0, 0, 0, .2); line-height: 1.25;
 }
 .stay-tag b { font-family: var(--font-display); font-weight: 500; font-size: 12px; }

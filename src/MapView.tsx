@@ -185,8 +185,8 @@ export function MapView({ trip, day, highlight, onHighlight, onSelectDay }: Prop
       popup.current = new maplibregl.Popup({ offset: 16, maxWidth: '260px' }).setLngLat([p.lon, p.lat]).setDOMContent(el).addTo(map);
     };
 
-    const add = (el: HTMLElement, lon: number, lat: number, anchor: maplibregl.PositionAnchor = 'center') => {
-      markers.current.push(new maplibregl.Marker({ element: el, anchor }).setLngLat([lon, lat]).addTo(map));
+    const add = (el: HTMLElement, lon: number, lat: number, anchor: maplibregl.PositionAnchor = 'center', offset: [number, number] = [0, 0]) => {
+      markers.current.push(new maplibregl.Marker({ element: el, anchor, offset }).setLngLat([lon, lat]).addTo(map));
     };
 
     for (const [id, p] of Object.entries(P)) {
@@ -195,6 +195,8 @@ export function MapView({ trip, day, highlight, onHighlight, onSelectDay }: Prop
       el.type = 'button';
       el.className = 'mk-dot' + (day ? ' faint' : '');
       el.style.setProperty('--c', color(p));
+      // hover effects go on this inner dot: maplibre positions the root via transform
+      el.appendChild(Object.assign(document.createElement('span'), { className: 'd' }));
       el.title = p.name;
       el.setAttribute('aria-label', p.name);
       el.addEventListener('click', e => { e.stopPropagation(); openPopup(id); });
@@ -222,7 +224,7 @@ export function MapView({ trip, day, highlight, onHighlight, onSelectDay }: Prop
           small.textContent = g.items.map(s => `${s.city === g.items[0].city ? '' : s.city + ' '}${nightsBetween(s.checkIn, s.checkOut)}`).join(' + ') + ' ноч.';
         }
         el.append(b, small);
-        add(el, g.lon, g.lat, 'bottom');
+        add(el, g.lon, g.lat, 'bottom', [0, -8]);
       });
     }
 
